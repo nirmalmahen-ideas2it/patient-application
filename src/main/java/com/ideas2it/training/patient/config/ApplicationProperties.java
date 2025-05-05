@@ -34,4 +34,5 @@ public class ApplicationProperties {
         }
     }
     // jhipster-needle-application-properties-property-class
+
 }

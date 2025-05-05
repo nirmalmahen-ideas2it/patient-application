@@ -1,0 +1,17 @@
+---- data.sql
+--INSERT INTO physicians (
+--    id, name, contact_number, secondary_contact_number, email,
+--    specialization, license_number, hospital, office_address,
+--    years_of_experience, status, created_by, created_date, last_modified_by, last_modified_date, row_version
+--)
+--VALUES
+--(1, 'Dr. Alice Monroe', '555-0101', '555-1101', 'alice.monroe@example.com', 'Cardiology', 'LIC123456', 'City Hospital', '123 Heartbeat Ln', 15, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(2, 'Dr. Brian Singh', '555-0102', '555-1102', 'brian.singh@example.com', 'Neurology', 'LIC223456', 'NeuroCare Clinic', '456 Brain St', 10, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(3, 'Dr. Clara Zhang', '555-0103', '555-1103', 'clara.zhang@example.com', 'Pediatrics', 'LIC323456', 'Sunrise Children Hospital', '789 Kid Ave', 12, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(4, 'Dr. Daniel Costa', '555-0104', '555-1104', 'daniel.costa@example.com', 'Orthopedics', 'LIC423456', 'Ortho Plus', '321 Bone Blvd', 18, 'INACTIVE', 'admin', now(), 'admin', now(), 1),
+--(5, 'Dr. Eva Kline', '555-0105', '555-1105', 'eva.kline@example.com', 'Dermatology', 'LIC523456', 'SkinCare Clinic', '654 Skin St', 9, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(6, 'Dr. Frank Lowe', '555-0106', '555-1106', 'frank.lowe@example.com', 'Gastroenterology', 'LIC623456', 'Digestive Center', '987 Gut Rd', 14, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(7, 'Dr. Grace Patel', '555-0107', '555-1107', 'grace.patel@example.com', 'Psychiatry', 'LIC723456', 'Mind Wellness Center', '159 Calm Way', 20, 'INACTIVE', 'admin', now(), 'admin', now(), 1),
+--(8, 'Dr. Henry Kim', '555-0108', '555-1108', 'henry.kim@example.com', 'Oncology', 'LIC823456', 'Cancer Hope Hospital', '753 Cure Ln', 16, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(9, 'Dr. Isla Gomez', '555-0109', '555-1109', 'isla.gomez@example.com', 'Endocrinology', 'LIC923456', 'Hormone Health Clinic', '852 Balance Rd', 11, 'ACTIVE', 'admin', now(), 'admin', now(), 1),
+--(10, 'Dr. Jack Nguyen', '555-0110', '555-1110', 'jack.nguyen@example.com', 'Pulmonology', 'LIC1023456', 'BreathEasy Center', '951 Air Dr', 13, 'ACTIVE', 'admin', now(), 'admin', now(), 1);
