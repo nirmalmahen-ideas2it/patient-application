@@ -4,21 +4,22 @@ import com.ideas2it.training.patient.entity.LoginRequest;
 import com.ideas2it.training.patient.entity.LoginResponse;
 import com.ideas2it.training.patient.entity.LoginResult;
 import com.ideas2it.training.patient.entity.TokenResponse;
-import com.ideas2it.training.patient.service.KeycloakTokenService;
+import com.ideas2it.training.patient.security.TokenContextHolder;
 import com.ideas2it.training.patient.webclient.UserValidationClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 /**
  * REST controller for authentication.
  *
  * <p>This controller provides an endpoint for user authentication. It validates
  * user credentials using the {@link UserValidationClient} and generates an access
- * token using the {@link KeycloakTokenService}.</p>
  *
  * <p>Example usage:</p>
  * <pre>
@@ -37,18 +38,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/authenticate")
 public class AuthController {
 
+    private final RedisTemplate<String, Object> redisTemplate;
     private final UserValidationClient userValidationClient;
-    private final KeycloakTokenService keycloakTokenService;
+    @Value("${token.expiry.seconds:300}") // 5 minutes default
+    private long tokenTtl;
 
     /**
      * Constructs an instance of {@link AuthController}.
      *
      * @param userValidationClient the client for validating user credentials
-     * @param keycloakTokenService the service for generating access tokens
+     *                             //     * @param keycloakTokenService the service for generating access tokens
      */
-    public AuthController(UserValidationClient userValidationClient, KeycloakTokenService keycloakTokenService) {
+    public AuthController(RedisTemplate<String, Object> redisTemplate, UserValidationClient userValidationClient
+    ) {
+        this.redisTemplate = redisTemplate;
         this.userValidationClient = userValidationClient;
-        this.keycloakTokenService = keycloakTokenService;
     }
 
     /**
@@ -62,14 +66,22 @@ public class AuthController {
      * @return a response entity containing the access token or an error message
      */
     @PostMapping
-    public ResponseEntity<?> authenticate(@RequestBody LoginRequest request) {
-        LoginResponse result = userValidationClient.validateUser(request);
+    public ResponseEntity<?> authenticate(@RequestBody LoginRequest request,
+                                          @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            TokenContextHolder.setToken(token);
+            LoginResponse result = userValidationClient.validateUser(request);
 
-        if (result.getStatus() == LoginResult.SUCCESS) {
-            String token = keycloakTokenService.getAccessToken();
-            return ResponseEntity.ok(new TokenResponse(token));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            if (result.getStatus() == LoginResult.SUCCESS) {
+                redisTemplate.opsForValue().set(token, true, Duration.ofSeconds(tokenTtl));
+                return ResponseEntity.ok(new TokenResponse(token));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } finally {
+            TokenContextHolder.clear();
         }
     }
+
 }

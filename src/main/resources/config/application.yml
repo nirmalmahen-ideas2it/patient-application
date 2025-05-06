@@ -4,24 +4,6 @@ spring:
 
   security:
     oauth2:
-      client:
-        registration:
-          user-client:
-            client-id: ${oauth.userclient.clientid}
-            client-secret: ${oauth.userclient.secret}
-            authorization-grant-type: client_credentials
-            provider: keycloak
-            scope: openid
-          patient-client:
-            client-id: ${oauth.patientclient.clientid}
-            client-secret: ${oauth.patientclient.secret}
-            authorization-grant-type: client_credentials
-            provider: keycloak
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: ${oauth.provider.keycloak.issueruri}
-            token-uri: ${oauth.provider.keycloak.tokenuri}
       resourceserver:
         jwt:
           issuer-uri: ${oauth.resourceserver.jwt.issueruri}
@@ -75,3 +57,13 @@ management:
 jhipster:
   clientApp:
     name: 'Patient-Microservice'
+
+springdoc:
+  swagger-ui:
+    oauth2-redirect-url: ${oauth.redirectUri}
+    oauth:
+      client-id: ${oauth.patientclient.clientid}
+      client-secret: ${oauth.patientclient.secret}  #Here, the secret is required for confidential clients
+      authorization-url: ${oauth.authUri}
+      token-url: ${oauth.provider.keycloak.tokenuri}
+      scope: openid

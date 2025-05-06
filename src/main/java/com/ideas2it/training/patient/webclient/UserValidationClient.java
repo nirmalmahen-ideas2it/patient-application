@@ -1,6 +1,6 @@
 package com.ideas2it.training.patient.webclient;
 
-import com.ideas2it.training.patient.config.UserFeignClientConfig;
+import com.ideas2it.training.patient.config.FeignClientConfig;
 import com.ideas2it.training.patient.entity.LoginRequest;
 import com.ideas2it.training.patient.entity.LoginResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
  *
  * <p>This client communicates with the user validation service to validate login requests.
  * It uses Feign to simplify HTTP client interactions and is configured with
- * {@link UserFeignClientConfig} for custom settings.</p>
  *
  * <p>Example usage:</p>
  * <pre>
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author Alagu Nirmal Mahendran
  * @since 06/05/2025
  */
-@FeignClient(name = "user-validation-client", url = "${user-validation-client.url}", configuration = UserFeignClientConfig.class)
+@FeignClient(name = "user-validation-client", url = "${user-validation-client.url}", configuration = FeignClientConfig.class)
 public interface UserValidationClient {
 
     /**

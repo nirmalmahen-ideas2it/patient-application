@@ -1,76 +1,62 @@
 package com.ideas2it.training.patient.config;
 
+
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
-import org.springdoc.core.models.GroupedOpenApi;
+import io.swagger.v3.oas.models.security.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuration for OpenAPI and Swagger UI with JWT support.
- *
- * <p>This class sets up the OpenAPI documentation for the Patient module, including
- * security configurations for JWT-based authentication. It also defines a grouped
- * API for better organization of endpoints in Swagger UI.</p>
- *
- * <p>Example usage:</p>
- * <pre>
- * OpenAPI openAPI = new OpenApiConfig().customOpenAPI();
- * GroupedOpenApi groupedApi = new OpenApiConfig().patientApi();
- * </pre>
- *
- * <p>Note: Ensure that the application is configured with proper JWT settings for
- * the security scheme to function correctly.</p>
+ * Configuration for OpenAPI documentation.
+ * <p>
+ * This class sets up the OpenAPI specification for the application,
+ * including security schemes and API metadata.
+ * </p>
  *
  * @author Alagu Nirmal Mahendran
- * @version 1.0
- * @since 06/05/2025
+ * @created 2025-06-05
  */
 @Configuration
 public class OpenApiConfig {
 
-    private static final String SECURITY_SCHEME_NAME = "BearerAuth";
+    private static final String SECURITY_SCHEME_NAME = "Keycloak";
+
+    @Value("${springdoc.swagger-ui.oauth.authorization-url}")
+    private String authorizationUrl;
+
+    @Value("${springdoc.swagger-ui.oauth.token-url}")
+    private String tokenUrl;
 
     /**
-     * Configures the OpenAPI documentation with security and general information.
+     * Configures the custom OpenAPI specification.
+     * <p>
+     * This method sets up the API title, version, and security requirements
+     * using OAuth2 authorization code flow.
+     * </p>
      *
-     * <p>This method sets up the API title, version, description, and security
-     * requirements for JWT-based authentication.</p>
-     *
-     * @return the configured {@link OpenAPI} object
+     * @return the OpenAPI bean
      */
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-            .info(new Info()
-                .title("Patient API")
-                .version("1.0")
-                .description("API documentation for the Patient module"))
+            .info(new Info().title("Patient Module").version("v1"))
             .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
-            .components(new io.swagger.v3.oas.models.Components()
-                .addSecuritySchemes(SECURITY_SCHEME_NAME,
-                    new SecurityScheme()
-                        .name(SECURITY_SCHEME_NAME)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")));
+            .components(new Components().addSecuritySchemes(SECURITY_SCHEME_NAME,
+                new SecurityScheme()
+                    .type(SecurityScheme.Type.OAUTH2)
+                    .scheme("bearer")
+                    .bearerFormat("JWT")
+                    .flows(new OAuthFlows()
+                        .authorizationCode(new OAuthFlow()
+                            .authorizationUrl(authorizationUrl)
+                            .tokenUrl(tokenUrl)
+                            .scopes(new Scopes().addString("openid", "OpenID Connect scope"))
+                        )
+                    )
+            ));
     }
 
-    /**
-     * Configures a grouped API for the Patient module.
-     *
-     * <p>This method organizes the endpoints related to the Patient module into
-     * a separate group in Swagger UI for better clarity and navigation.</p>
-     *
-     * @return the configured {@link GroupedOpenApi} object
-     */
-    @Bean
-    public GroupedOpenApi patientApi() {
-        return GroupedOpenApi.builder()
-            .group("patient")
-            .packagesToScan("com.ideas2it.training.patient.web.rest.controller")
-            .build();
-    }
 }
