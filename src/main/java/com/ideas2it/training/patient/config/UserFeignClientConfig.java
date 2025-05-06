@@ -11,6 +11,27 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+/**
+ * Configuration for Feign client with Keycloak authentication.
+ *
+ * <p>This configuration class provides a Feign `RequestInterceptor` that automatically
+ * adds a Bearer token to outgoing requests. The token is fetched from Keycloak using
+ * the client credentials grant type and is cached until it expires.</p>
+ *
+ * <p>Example usage:</p>
+ * <pre>
+ * FeignClient client = Feign.builder()
+ *     .requestInterceptor(new UserFeignClientConfig().keycloakAuthInterceptor())
+ *     .target(MyFeignClient.class, "http://example.com");
+ * </pre>
+ *
+ * <p>Note: Ensure that the required properties for Keycloak integration are configured
+ * in the application properties file.</p>
+ *
+ * @author
+ * @version 1.0
+ * @since 06/05/2025
+ */
 @Configuration
 public class UserFeignClientConfig {
 
@@ -26,6 +47,14 @@ public class UserFeignClientConfig {
     private String cachedToken;
     private long tokenExpiryTime;
 
+    /**
+     * Creates a Feign `RequestInterceptor` for adding Keycloak authentication headers.
+     *
+     * <p>This interceptor ensures that each outgoing request includes a valid Bearer token
+     * in the Authorization header. The token is fetched and cached until it expires.</p>
+     *
+     * @return the configured `RequestInterceptor`
+     */
     @Bean
     public RequestInterceptor keycloakAuthInterceptor() {
         return requestTemplate -> {
@@ -36,6 +65,14 @@ public class UserFeignClientConfig {
         };
     }
 
+    /**
+     * Fetches an access token from Keycloak.
+     *
+     * <p>This method uses the client credentials grant type to authenticate with Keycloak
+     * and retrieve an access token. The token is cached along with its expiry time.</p>
+     *
+     * @return the access token as a string
+     */
     private String fetchAccessToken() {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -58,4 +95,3 @@ public class UserFeignClientConfig {
         return cachedToken;
     }
 }
-

@@ -3,14 +3,18 @@ package com.ideas2it.training.patient.dto;
 import com.ideas2it.training.patient.entity.Diagnoses;
 import com.ideas2it.training.patient.entity.ReferralInfo;
 import lombok.Data;
+import net.minidev.json.annotate.JsonIgnore;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * DTO for returning Patient data.
  */
 @Data
-public class PatientInfo {
+public class PatientInfo implements Serializable {
+    @JsonIgnore
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String medicalRecordNumber;
     private LocalDate startOfCareDate;

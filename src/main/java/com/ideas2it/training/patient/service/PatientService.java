@@ -1,9 +1,8 @@
 package com.ideas2it.training.patient.service;
 
+import com.ideas2it.training.patient.dto.PagedResponse;
 import com.ideas2it.training.patient.dto.PatientInfo;
 import com.ideas2it.training.patient.dto.PatientRequest;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface PatientService {
 
     List<PatientInfo> getAll();
 
-    Page<PatientInfo> getAllPaged(Pageable pageable);
+    PagedResponse<PatientInfo> getAllPaged(int offset, int limit);
 
     void delete(Long id);
 }
