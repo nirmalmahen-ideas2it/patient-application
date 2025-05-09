@@ -38,6 +38,8 @@ spring:
   cloud:
     consul:
       discovery:
+        port: 9091
+        enabled: true
         service-name: patientapplication
         health-check-path: /actuator/health
         instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author Alagu Nirmal Mahendran
  * @since 06/05/2025
  */
-@FeignClient(name = "user-validation-client", url = "${user-validation-client.url}", configuration = FeignClientConfig.class)
+@FeignClient(name = "sample", configuration = FeignClientConfig.class)
 public interface UserValidationClient {
 
     /**
@@ -35,6 +35,6 @@ public interface UserValidationClient {
      * @param request the login request containing user credentials
      * @return the login response indicating success or failure
      */
-    @PostMapping("/validate")
+    @PostMapping("/api/auth/validate")
     LoginResponse validateUser(@RequestBody LoginRequest request);
 }
