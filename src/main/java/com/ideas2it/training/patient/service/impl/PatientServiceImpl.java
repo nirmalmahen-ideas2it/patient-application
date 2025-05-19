@@ -1,12 +1,15 @@
 package com.ideas2it.training.patient.service.impl;
 
+import com.ideas2it.training.patient.aop.annotations.LogExecutionTime;
 import com.ideas2it.training.patient.dto.PagedResponse;
 import com.ideas2it.training.patient.dto.PatientInfo;
 import com.ideas2it.training.patient.dto.PatientRequest;
 import com.ideas2it.training.patient.entity.Patient;
 import com.ideas2it.training.patient.mapper.PatientMapper;
 import com.ideas2it.training.patient.mapper.PhysicianResolver;
+import com.ideas2it.training.patient.publish.PatientInfoPublisher;
 import com.ideas2it.training.patient.repository.PatientRepository;
+import com.ideas2it.training.patient.service.PatientMetricService;
 import com.ideas2it.training.patient.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -41,8 +44,11 @@ import java.util.stream.Collectors;
 public class PatientServiceImpl implements PatientService {
 
     private final PatientRepository repository;
+    private final PatientMetricService metricService;
     private final PatientMapper mapper;
     private final PhysicianResolver physicianResolver;
+    private final PatientInfoPublisher patientInfoPublisher;
+
 
     /**
      * Creates a new patient.
@@ -51,9 +57,14 @@ public class PatientServiceImpl implements PatientService {
      * @return the created patient information
      */
     @Override
+    @LogExecutionTime
     public PatientInfo create(PatientRequest request) {
         Patient patient = mapper.toEntity(request, physicianResolver);
-        return mapper.toInfo(repository.save(patient));
+        Patient savedPatient = repository.save(patient);
+        metricService.incrementPatientCount();
+        PatientInfo patientInfo = mapper.toInfo(savedPatient);
+        patientInfoPublisher.sendPatientInfo(patientInfo);
+        return patientInfo;
     }
 
     /**
@@ -69,7 +80,13 @@ public class PatientServiceImpl implements PatientService {
         Patient existing = repository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
         Patient updated = mapper.toEntity(request, physicianResolver);
         updated.setId(existing.getId());
-        return mapper.toInfo(repository.save(updated));
+        updated.setCreatedBy(existing.getCreatedBy());
+        updated.setCreatedDate(existing.getCreatedDate());
+        updated.setLastModifiedBy(existing.getLastModifiedBy());
+        updated.setLastModifiedDate(existing.getLastModifiedDate());
+        updated.setRowVersion(existing.getRowVersion());
+        Patient savedPatient = repository.save(updated);
+        return mapper.toInfo(savedPatient);
     }
 
     /**
@@ -106,14 +123,14 @@ public class PatientServiceImpl implements PatientService {
         Page<Patient> page = repository.findAll(pageRequest);
 
         List<PatientInfo> patientInfos = page.getContent().stream()
-            .map(mapper::toInfo)
-            .toList();
+                .map(mapper::toInfo)
+                .toList();
 
         return new PagedResponse<>(
-            patientInfos,
-            page.getTotalElements(),
-            page.getNumber(),
-            page.getSize()
+                patientInfos,
+                page.getTotalElements(),
+                page.getNumber(),
+                page.getSize()
         );
     }
 

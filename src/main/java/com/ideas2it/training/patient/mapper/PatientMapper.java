@@ -24,7 +24,7 @@ import org.mapstruct.*;
  *
  * <p>Note: The implementation of this interface is generated automatically by MapStruct.</p>
  *
- * @author
+ * @author Alagu Nirmal Mahendran
  * @version 1.0
  * @since 06/05/2025
  */

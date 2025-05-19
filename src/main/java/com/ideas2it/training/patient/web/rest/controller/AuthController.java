@@ -6,6 +6,10 @@ import com.ideas2it.training.patient.entity.LoginResult;
 import com.ideas2it.training.patient.entity.TokenResponse;
 import com.ideas2it.training.patient.security.TokenContextHolder;
 import com.ideas2it.training.patient.webclient.UserValidationClient;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +22,9 @@ import java.time.Duration;
 /**
  * REST controller for authentication.
  *
- * <p>This controller provides an endpoint for user authentication. It validates
+ * <p>This controller provides endpoints for user authentication. It validates
  * user credentials using the {@link UserValidationClient} and generates an access
+ * token for authenticated users.</p>
  *
  * <p>Example usage:</p>
  * <pre>
@@ -36,35 +41,32 @@ import java.time.Duration;
  */
 @RestController
 @RequestMapping("/api/authenticate")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserValidationClient userValidationClient;
-    @Value("${token.expiry.seconds:300}") // 5 minutes default
-    private long tokenTtl;
 
-    /**
-     * Constructs an instance of {@link AuthController}.
-     *
-     * @param userValidationClient the client for validating user credentials
-     *                             //     * @param keycloakTokenService the service for generating access tokens
-     */
-    public AuthController(RedisTemplate<String, Object> redisTemplate, UserValidationClient userValidationClient
-    ) {
-        this.redisTemplate = redisTemplate;
-        this.userValidationClient = userValidationClient;
-    }
+    @Value("${token.expiry.seconds:300}") // Default token expiry time is 5 minutes
+    private long tokenTtl;
 
     /**
      * Authenticates a user.
      *
      * <p>This method validates the provided login request using the user validation
-     * service. If the credentials are valid, it generates an access token and returns
-     * it in the response. Otherwise, it returns an unauthorized status.</p>
+     * service. If the credentials are valid, it generates an access token and stores
+     * it in Redis with a time-to-live (TTL). Otherwise, it returns an unauthorized status.</p>
      *
-     * @param request the login request containing user credentials
+     * @param request    the login request containing user credentials
+     * @param authHeader the authorization header containing the bearer token
      * @return a response entity containing the access token or an error message
      */
+    @Operation(summary = "Authenticate a user", description = "Validates user credentials and generates an access token.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Authentication successful"),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping
     public ResponseEntity<?> authenticate(@RequestBody LoginRequest request,
                                           @RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
@@ -83,5 +85,4 @@ public class AuthController {
             TokenContextHolder.clear();
         }
     }
-
 }

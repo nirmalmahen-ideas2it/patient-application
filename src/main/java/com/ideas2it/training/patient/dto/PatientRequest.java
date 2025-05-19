@@ -8,6 +8,12 @@ import java.time.LocalDate;
 
 /**
  * DTO for creating or updating Patient data.
+ * <p>
+ * This class is used to encapsulate patient information that is sent as part of API requests.
+ * It includes personal details, medical information, and associated physician details.
+ * <p>
+ * Author: Alagu Nirmal Mahendran
+ * CreatedOn: 2023-10-05
  */
 @Data
 public class PatientRequest {
