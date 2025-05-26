@@ -231,6 +231,7 @@
     </dependencies>
 
     <build>
+        <finalName>patient-application</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
