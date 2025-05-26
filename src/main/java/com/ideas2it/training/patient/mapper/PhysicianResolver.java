@@ -52,8 +52,8 @@ public class PhysicianResolver {
     @Named("resolvePhysician")
     public Physician resolvePhysician(String licenseNumber) {
         return licenseNumber != null
-            ? repository.findByLicenseNumber(licenseNumber)
-            .orElseThrow(() -> new PhysicianNotFoundException("Physician not found with license number: " + licenseNumber))
-            : null;
+                ? repository.findByLicenseNumber(licenseNumber)
+                .orElseThrow(() -> new PhysicianNotFoundException("Physician not found with license number: " + licenseNumber))
+                : null;
     }
 }

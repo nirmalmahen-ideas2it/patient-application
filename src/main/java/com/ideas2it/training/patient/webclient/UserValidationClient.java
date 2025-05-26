@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author Alagu Nirmal Mahendran
  * @since 06/05/2025
  */
-@FeignClient(name = "sample", configuration = FeignClientConfig.class)
+@FeignClient(name = "user-application", configuration = FeignClientConfig.class)
 public interface UserValidationClient {
 
     /**
