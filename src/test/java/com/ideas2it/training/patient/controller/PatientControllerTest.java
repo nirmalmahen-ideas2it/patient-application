@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
@@ -33,6 +34,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeAutoConfiguration = {OAuth2ResourceServerAutoConfiguration.class})
 @AutoConfigureMockMvc(addFilters = false)  // disables security filters for test
 @WithMockUser(roles = "USER")
+@TestPropertySource(properties = {
+        "spring.cloud.config.enabled=false",
+        "spring.cloud.vault.enabled=false",
+        "spring.cloud.consul.enabled=false"
+})
 class PatientControllerTest {
 
     @Autowired
