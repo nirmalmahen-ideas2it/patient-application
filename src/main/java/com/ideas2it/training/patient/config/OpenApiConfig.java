@@ -33,7 +33,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info().title("Patient Module").version("v1"))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
-                .servers(List.of(new Server().url("http://localhost:9095/patientapplication"))) // <-- Override server
+                .servers(List.of(new Server().url("http://localhost:9095/patientvitalapplication"))) // <-- Override server
                 .components(new Components()
                         .addSecuritySchemes(SECURITY_SCHEME_NAME,
                                 new SecurityScheme()
